@@ -1,0 +1,179 @@
+// src by SRT X CHEATS. Copy right SRT X CHEATS
+import './src/loadEnv.js';
+import express from 'express';
+import userRoutes from './routes/user.js';
+import adminRoutes from './routes/srt_x_owner.js';
+// src by SRT X CHEATS. Copy right SRT X CHEATS
+import purchaseRoutes from './routes/purchase.js';
+import gloryRoutes from './routes/gulaa_bot.js';
+import authRoutes from './routes/auth.js';
+import employeeRoutes from './routes/employee.js';
+import resellerApiRoutes from './routes/reseller-api.js';
+// src by SRT X CHEATS. Copy right SRT X CHEATS
+import resellerPortalRoutes from './routes/reseller-portal.js';
+import rewardsRoutes from './routes/rewards.js';
+import shopSrcRoutes, { fileRouter as shopSrcFileRoutes } from './routes/shopsrc.js';
+import telegramTopupRoutes from './routes/telegram-topup.js';
+import telegramPublicRoutes from './routes/telegram-public.js';
+import telegramDepositRoutes from './routes/telegram-deposit.js';
+import supportRoutes from './routes/support.js';
+import { registerPublicWebhook } from './src/publicBot.js';
+import { registerDepositWebhook } from './src/depositBot.js';
+import { startHealthMonitor } from './src/healthMonitor.js';
+import { registerTopupWebhook } from './src/topupQr.js';
+import { getLiveCatalog } from './src/srt_storage_product.js';
+// src by SRT X CHEATS. Copy right SRT X CHEATS
+import { userCors } from './src/firebase.js';
+import { telegramNotify, esc } from './src/telegram.js';
+import { diagnoseGlory, gloryConfigured } from './src/gulaa_bot.js';
+import { rateLimit, securityHeaders, redact, useRealClientIp } from './src/security.js';
+import { asyncHandler } from './src/asyncHandler.js';
+// src by SRT X CHEATS. Copy right SRT X CHEATS
+import { policyCache } from './src/sharedCaches.js';
+import { loadVersions } from './src/versions.js';
+
+const app = express();
+app.disable('x-powered-by');
+// src by SRT X CHEATS. Copy right SRT X CHEATS
+app.set('trust proxy', 1);
+
+app.use(useRealClientIp);
+app.use(securityHeaders);
+app.use('/api/user/avatar', express.json({ limit: '2mb' }));
+app.use('/api/shopsrc/logo', express.json({ limit: '2mb' }));
+app.post('/api/support/tickets', express.json({ limit: '5mb' }));   // up to 3 compressed screenshots
+app.use(express.json({ limit: '16kb' }));
+// src by SRT X CHEATS. Copy right SRT X CHEATS
+
+// Telegram webhooks all come from Telegram's own IPs and are protected by a secret header, so they
+// must not share the 180/min bucket with real traffic (that would silently drop bot updates).
+const apiLimiter = rateLimit({ windowMs: 60_000, max: 180, name: 'api' });
+app.use('/api', (req, res, next) => (req.path.startsWith('/telegram/') ? next() : apiLimiter(req, res, next)));
+
+app.use((err, req, res, next) => {
+  if (err.type === 'entity.parse.failed') {
+    // src by SRT X CHEATS. Copy right SRT X CHEATS
+    return res.status(400).json({ success: false, error: 'Invalid JSON body' });
+  }
+  next(err);
+});
+
+// src by SRT X CHEATS. Copy right SRT X CHEATS
+const NOTIFY_ALL_REQUESTS = process.env.NOTIFY_ALL_REQUESTS === 'true';
+const securityAlertSeen = new Map();
+const SECURITY_ALERT_TTL = 60_000;
+
+app.use((req, res, next) => {
+  // src by SRT X CHEATS. Copy right SRT X CHEATS
+  const start = Date.now();
+  res.on('finish', () => {
+    const isProblem = res.statusCode === 401 || res.statusCode === 403 || res.statusCode === 429 || res.statusCode >= 500;
+    if (!isProblem && !NOTIFY_ALL_REQUESTS) return;
+
+    // src by SRT X CHEATS. Copy right SRT X CHEATS
+    const urlPath = String(req.originalUrl || req.url || '/').split('?')[0].slice(0, 120);   // req.path is cut by mounted routers ("/api/reseller/v1" -> "/"); query removed so api keys never reach Telegram
+    const alertKey = `${req.ip}|${req.method}|${urlPath}|${res.statusCode}`;
+    const now = Date.now();
+    if (isProblem) {
+      const last = securityAlertSeen.get(alertKey) || 0;
+      if (now - last < SECURITY_ALERT_TTL) return;
+      // src by SRT X CHEATS. Copy right SRT X CHEATS
+      securityAlertSeen.set(alertKey, now);
+      for (const [k, t] of securityAlertSeen) {
+        if (now - t > SECURITY_ALERT_TTL * 2) securityAlertSeen.delete(k);
+      }
+    }
+// src by SRT X CHEATS. Copy right SRT X CHEATS
+
+    const origin = esc(String(req.headers.origin || req.headers.referer || '').slice(0, 200) || '— (no browser: server / bot / script)');
+    const ua = esc(String(req.headers['user-agent'] || '—').slice(0, 80));
+    const emoji = isProblem ? '🚨' : '📡';
+    telegramNotify(
+      `${emoji} <b>${esc(req.method)} ${esc(urlPath)}</b>\n` +
+      // src by SRT X CHEATS. Copy right SRT X CHEATS
+      `IP: <code>${esc(req.ip)}</code>\n` +
+      `Origin: ${origin}\n` +
+      `UA: ${ua}\n` +
+      `Status: <b>${res.statusCode}</b>\n` +
+      `${Date.now() - start}ms`,
+      'health'
+    );
+  // src by SRT X CHEATS. Copy right SRT X CHEATS
+  });
+  next();
+});
+
+app.get('/', (req, res) => {
+  // src by SRT X CHEATS. Copy right SRT X CHEATS
+  res.status(200).json({ success: true, status: 'online' });
+});
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ success: true, status: 'awake', uptime: process.uptime() });
+// src by SRT X CHEATS. Copy right SRT X CHEATS
+});
+
+app.get('/api/catalog', userCors, asyncHandler(async (req, res) => {
+  const catalog = await getLiveCatalog('user');
+  // src by SRT X CHEATS. Copy right SRT X CHEATS
+  res.json({ success: true, catalog });
+}));
+
+app.get('/api/policy', userCors, asyncHandler(async (req, res) => {
+  res.json({ success: true, ...(await policyCache.get()) });
+// src by SRT X CHEATS. Copy right SRT X CHEATS
+}));
+
+app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/admin', adminRoutes);
+// src by SRT X CHEATS. Copy right SRT X CHEATS
+app.use('/api/employee', employeeRoutes);
+app.use('/api/purchase', purchaseRoutes);
+app.use('/api/glory', gloryRoutes);
+app.use('/api/rewards', rewardsRoutes);
+app.use('/api/support', supportRoutes);
+app.use('/api/shopsrc', shopSrcRoutes);
+app.use('/api/shopsrc-file', shopSrcFileRoutes);
+app.use('/api/telegram', telegramTopupRoutes);
+app.use('/api/telegram', telegramPublicRoutes);
+app.use('/api/telegram', telegramDepositRoutes);
+// src by SRT X CHEATS. Copy right SRT X CHEATS
+
+app.use('/api/reseller/v1', resellerApiRoutes);
+app.use('/api/reseller-portal', resellerPortalRoutes);
+
+app.use((err, req, res, next) => {
+  // src by SRT X CHEATS. Copy right SRT X CHEATS
+  console.error('[srtx-backend] Unhandled error:', redact(err).slice(0, 1500));
+  telegramNotify(`🔥 <b>Server error</b> ${esc(req.method)} ${esc(req.path)}\n${esc(redact(err?.message || err).slice(0, 300))}`, 'health');
+  if (res.headersSent) return next(err);
+  res.status(500).json({ success: false, error: 'Internal server error. Please try again.' });
+});
+
+// src by SRT X CHEATS. Copy right SRT X CHEATS
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`srtx-backend listening on port ${PORT}`);
+  loadVersions();
+  registerTopupWebhook().catch(() => {});
+  registerPublicWebhook().catch(() => {});
+  registerDepositWebhook().catch(() => {});
+  startHealthMonitor();
+  // src by SRT X CHEATS. Copy right SRT X CHEATS
+  if (gloryConfigured() && process.env.GLORY_DIAG_ON_START !== '0') {
+    setTimeout(() => diagnoseGlory().then((l) => l.forEach((x) => console.log('[glory-diag]', x))).catch(() => {}), 3000);
+  }
+});
+
+// A crash-class problem should reach you, not just the Render log.
+let lastFatalAlert = 0;
+function fatal(kind, err) {
+  console.error(`[srtx-backend] ${kind}:`, redact(err).slice(0, 1500));
+  if (Date.now() - lastFatalAlert < 60_000) return;
+  lastFatalAlert = Date.now();
+  telegramNotify(`🔥 <b>${esc(kind)}</b>\n${esc(redact(err).slice(0, 600))}`, 'health');
+}
+process.on('unhandledRejection', (e) => fatal('Unhandled rejection', e));
+// after an uncaught exception the process state is unreliable: alert, then let Render restart it
+process.on('uncaughtException', (e) => { fatal('Uncaught exception', e); setTimeout(() => process.exit(1), 2500); });

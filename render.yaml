@@ -1,0 +1,10 @@
+# src by SRT X CHEATS. Copy right SRT X CHEATS
+services:
+  - type: web
+    name: srtx-backend
+    env: node
+# src by SRT X CHEATS. Copy right SRT X CHEATS
+    rootDir: Repro-main
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
