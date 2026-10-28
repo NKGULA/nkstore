@@ -1,7 +1,7 @@
 # MEMORY — context to keep
 
 ## Project facts
-- Brand: SRT X CHEATS. Currency shown as **NRP**. Times shown in Nepal time (Asia/Kathmandu).
+- Brand: NK STORE. Currency shown as **NRP**. Times shown in Nepal time (Asia/Kathmandu).
 - Source files carry the comment `// src by SRT X CHEATS. Copy right SRT X CHEATS` — keep it.
 - `src/catalog1-3.js` are empty stubs; real products live in Firestore `customProducts` / `whatsappProducts`. Product group name = field `row`; each duration is its own document.
 - Phone is stored in `profilePhone` (format varies) — always match on the last 10 digits.

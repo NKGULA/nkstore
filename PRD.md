@@ -1,7 +1,7 @@
-# PRD — SRT X CHEATS Backend
+# PRD — NK STORE Backend
 
 ## Purpose
-Node.js backend for the SRT X CHEATS key store. The PHP website talks to it for login-protected actions; admins run the business from the admin panel and from Telegram bots.
+Node.js backend for the NK STORE key store. The PHP website talks to it for login-protected actions; admins run the business from the admin panel and from Telegram bots.
 
 ## Users
 | Who | Needs |
@@ -16,7 +16,7 @@ Node.js backend for the SRT X CHEATS key store. The PHP website talks to it for 
 
 **Private admin bot:** `/addbalance` `/cutbalance` `/alluserbalance` `/allusers_list` `/allrevenue` `/product_info` `/ban` `/unban` `/removeallrestriction` `/annulment` `/getdetail` `/mode` `/notifytest` `/cancel`. Users can be given by UID, e-mail or phone number.
 
-**Public bot:** send number / e-mail / UID → "SRT X CHEATS USER DETAILS" card with **[Report] [Ok]**. Report text is stored (`resellerReports`) and sent to the admins.
+**Public bot:** send number / e-mail / UID → "NK STORE USER DETAILS" card with **[Report] [Ok]**. Report text is stored (`resellerReports`) and sent to the admins.
 
 **Alert bots (one per job):** purchase logs, website health + issues, bug reports, top-up requests / new features (private bot).
 

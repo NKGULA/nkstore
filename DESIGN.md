@@ -15,7 +15,7 @@
 ## Public user card
 ```
 __________________________________________________
-SRT X CHEATS USER DETAILS
+NK STORE USER DETAILS
 _________________________
 Name - …  Number - …  Email - …  Role - …
 Total spend - (money loaded)   Available balance - …
