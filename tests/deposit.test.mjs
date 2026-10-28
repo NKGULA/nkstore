@@ -14,7 +14,7 @@ process.env.SITE_URL = 'https://www.srtxcheats.com';
 const sent = [];
 globalThis.fetch = async (url, opt) => {
   if (!String(url).includes('api.telegram.org')) {               // the backend fetching the QR image from the website
-    if (String(url).endsWith('/assets/img/srtx-pay-qr.jpg')) {
+    if (String(url).endsWith('/assets/img/nk-pay-qr.jpg')) {
       return { ok: true, headers: { get: () => 'image/jpeg' }, arrayBuffer: async () => Buffer.from('fake-qr-bytes') };
     }
     return { ok: false, status: 404, headers: { get: () => null }, arrayBuffer: async () => Buffer.alloc(0) };
@@ -25,7 +25,7 @@ globalThis.fetch = async (url, opt) => {
   if (opt?.body instanceof FormData) {                            // multipart upload (sendPhoto)
     b = {}; let fileField = null;
     for (const [k, v] of opt.body.entries()) { if (v instanceof Blob) fileField = k; else b[k] = v; }
-    b.photo = fileField ? 'uploaded:srtx-pay-qr.jpg' : undefined;
+    b.photo = fileField ? 'uploaded:nk-pay-qr.jpg' : undefined;
   } else {
     b = opt?.body ? JSON.parse(opt.body) : {};
   }
@@ -56,8 +56,8 @@ const t1 = (await dep.createDepositLink('UID123456789012345678901234')).split('d
 await say(`/start dep_${t1}`);
 const card = sent.find((m) => m.method === 'sendMessage' && /Uid - UID123/.test(m.text || ''));
 assert.ok(card, 'details card'); assert.match(card.text, /Email - a@b.com[\s\S]*Name - Ram[\s\S]*Number - 9800000000[\s\S]*I want to get deposit balance/);
-const photo = sent.find((m) => m.method === 'sendPhoto'); assert.match(photo.caption, /Welcome to SRT X CHEATS[\s\S]*Enter amount of deposit/);
-assert.match(photo.photo, /srtx-pay-qr\.jpg$/);
+const photo = sent.find((m) => m.method === 'sendPhoto'); assert.match(photo.caption, /Welcome to NK STORE[\s\S]*Enter amount of deposit/);
+assert.match(photo.photo, /nk-pay-qr\.jpg$/);
 await say(`/start dep_${t1}`);                              // link is one-time
 assert.match(last().text, /expired/);
 
