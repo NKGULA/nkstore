@@ -298,7 +298,7 @@ router.post('/topup', asyncHandler(async (req,res)=>{
   if(!amount||amount<50) return res.status(400).json({success:false,error:'Enter a valid amount (minimum Rs 50)'});
   // src by SRT X CHEATS. Copy right SRT X CHEATS
   if(amount>1000000) return res.status(400).json({success:false,error:'Amount is too large'});
-  if(paymentAccount!=='SRT X CHEATS (OWNER)') return res.status(400).json({success:false,error:'Invalid payment account'});
+  if(paymentAccount!=='NK STORE (OWNER)') return res.status(400).json({success:false,error:'Invalid payment account'});
   if(!txCheck.ok) return res.status(400).json({success:false,error:txCheck.error});
   if(txCode.length>120) return res.status(400).json({success:false,error:'Transaction code is too long'});
   const userRef=db().collection('users').doc(req.uid);

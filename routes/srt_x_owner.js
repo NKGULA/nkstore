@@ -284,7 +284,7 @@ router.post('/topup-review', asyncHandler(async (req, res) => {
       // src by SRT X CHEATS. Copy right SRT X CHEATS
       });
     } else {
-      telegramNotify(telegramFormat('Balance Load Rejected', { username: uid, product: 'SRT X CHEATS (OWNER)', price: 0, uid, status: 'failed', others: `TX code: ${txCode}` }), 'balance');
+      telegramNotify(telegramFormat('Balance Load Rejected', { username: uid, product: 'NK STORE (OWNER)', price: 0, uid, status: 'failed', others: `TX code: ${txCode}` }), 'balance');
     }
   } catch (e) {
     // src by SRT X CHEATS. Copy right SRT X CHEATS

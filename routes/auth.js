@@ -43,7 +43,7 @@ async function sendOtpEmail(email, otp) {
   // src by SRT X CHEATS. Copy right SRT X CHEATS
   const apiKey = process.env.BREVO_API_KEY;
   const senderEmail = process.env.BREVO_SENDER_EMAIL;
-  const senderName = process.env.BREVO_SENDER_NAME || 'SRT X CHEATS';
+  const senderName = process.env.BREVO_SENDER_NAME || 'NK STORE';
   if (!apiKey) throw new Error('BREVO_API_KEY is not configured');
   if (!senderEmail) throw new Error('BREVO_SENDER_EMAIL is not configured');
 // src by SRT X CHEATS. Copy right SRT X CHEATS
@@ -60,9 +60,9 @@ async function sendOtpEmail(email, otp) {
       sender: { name: senderName, email: senderEmail },
       // src by SRT X CHEATS. Copy right SRT X CHEATS
       to: [{ email }],
-      subject: 'SRT X CHEATS — Password Reset OTP',
-      textContent: `Your SRT X CHEATS password reset OTP is: ${otp}\n\nThis OTP expires in 10 minutes.\n\nIf you did not request a password reset, ignore this email.`,
-      htmlContent: `<div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;padding:24px;background:#111;color:#fff;border-radius:14px"><h2>SRT X CHEATS</h2><p>Your password reset OTP is:</p><div style="font-size:32px;font-weight:800;letter-spacing:8px;text-align:center;padding:18px;background:#1d1730;border-radius:12px">${otp}</div><p>This OTP expires in <b>10 minutes</b>.</p><p>If you did not request a password reset, ignore this email.</p></div>`,
+      subject: 'NK STORE — Password Reset OTP',
+      textContent: `Your NK STORE password reset OTP is: ${otp}\n\nThis OTP expires in 10 minutes.\n\nIf you did not request a password reset, ignore this email.`,
+      htmlContent: `<div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;padding:24px;background:#111;color:#fff;border-radius:14px"><h2>NK STORE</h2><p>Your password reset OTP is:</p><div style="font-size:32px;font-weight:800;letter-spacing:8px;text-align:center;padding:18px;background:#1d1730;border-radius:12px">${otp}</div><p>This OTP expires in <b>10 minutes</b>.</p><p>If you did not request a password reset, ignore this email.</p></div>`,
     }),
   // src by SRT X CHEATS. Copy right SRT X CHEATS
   });
