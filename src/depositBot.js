@@ -5,7 +5,7 @@
 //   user     -> sends the amount -> sends the eSewa transaction code
 //   bot      -> creates the same QR top-up request as the website, the admin bot gets Load / Cancel buttons
 // Env: TELEGRAM_DEPOSIT_BOT_TOKEN (required), PUBLIC_BACKEND_URL (https, webhook),
-//      SITE_URL (where /assets/img/srtx-pay-qr.jpg is served, default https://www.srtxcheats.com),
+//      SITE_URL (where /assets/img/nk-pay-qr.jpg is served, default https://www.srtxcheats.com),
 //      TELEGRAM_DEPOSIT_WEBHOOK_SECRET (optional), DEPOSIT_QR_URL (optional, full URL of the QR image).
 import crypto from 'node:crypto';
 import { db } from './firebase.js';
@@ -143,10 +143,10 @@ function allow(id, max, windowMs) {
 }
 
 const qrUrl = () => process.env.DEPOSIT_QR_URL
-  || `${String(process.env.SITE_URL || 'https://www.srtxcheats.com').replace(/\/+$/, '')}/assets/img/srtx-pay-qr.jpg`;
+  || `${String(process.env.SITE_URL || 'https://www.srtxcheats.com').replace(/\/+$/, '')}/assets/img/nk-pay-qr.jpg`;
 
 const INTRO =
-  '👋 <b>SRT X CHEATS — Deposit bot</b>\n' +
+  '👋 <b>NK STORE — Deposit bot</b>\n' +
   'To add balance, open the website → <b>Add Balance</b> → <b>Deposit via Telegram</b>.\n' +
   'That link connects this chat to your account safely.';
 
@@ -212,10 +212,10 @@ async function onStartLink(chat, tgId, token) {
   // the "pre-typed" message with the user's own details
   await say(chat, detailsCard(l.uid, d));
   // store QR + welcome + amount question
-  const caption = `Welcome to SRT X CHEATS\n${LONG}\n${ASK_AMOUNT}`;
+  const caption = `Welcome to NK STORE\n${LONG}\n${ASK_AMOUNT}`;
   const qr = await fetchQr();
-  const photo = qr ? await apiUpload('sendPhoto', { chat_id: chat, caption }, 'photo', qr.buf, 'srtx-pay-qr.jpg', qr.contentType) : null;
-  if (!photo?.ok) await say(chat, `Welcome to SRT X CHEATS\n(Could not load the QR image right now — open the website → Add Balance → Pay with QR.)\n${LONG}\n${ASK_AMOUNT}`);
+  const photo = qr ? await apiUpload('sendPhoto', { chat_id: chat, caption }, 'photo', qr.buf, 'nk-pay-qr.jpg', qr.contentType) : null;
+  if (!photo?.ok) await say(chat, `Welcome to NK STORE\n(Could not load the QR image right now — open the website → Add Balance → Pay with QR.)\n${LONG}\n${ASK_AMOUNT}`);
 }
 
 async function onAmount(chat, tgId, s, text) {

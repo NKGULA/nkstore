@@ -264,7 +264,7 @@ async function autoRejectFake({ uid, email, amount, txCode, ip, source }) {
     const d = u.exists ? u.data() : {};
     const list = Array.isArray(d.topupRequests) ? d.topupRequests : [];
     const sk = strikeFields(d, shown, now);
-    const entry = { date: now, amount, paymentAccount: 'QR (SRT X CHEATS)', method: QR_METHOD, txCode: shown, status: 'REJECTED', uid, email: email || d.email || '', reqId, ip, reviewedAt: now, reviewedBy: 'auto-format-check', fake: true, ...(source !== 'website' ? { source } : {}) };
+    const entry = { date: now, amount, paymentAccount: 'QR (NK STORE)', method: QR_METHOD, txCode: shown, status: 'REJECTED', uid, email: email || d.email || '', reqId, ip, reviewedAt: now, reviewedBy: 'auto-format-check', fake: true, ...(source !== 'website' ? { source } : {}) };
     tx.set(userRef, { ...sk.upd, topupRequests: [...list, entry] }, { merge: true });
     return sk;
   });
@@ -306,7 +306,7 @@ export async function createQrTopup({ uid, email = '', amount, txCode, ip = '', 
         const mins = Math.max(1, Math.ceil((oldest + QR_PENDING_WINDOW_MS - Date.now()) / 60000));
         throw new Error(`You already have ${recentPending.length} top-ups waiting to be checked. You can send a new one in about ${mins} min.`);
       }
-      const entry = { date, amount, paymentAccount: 'QR (SRT X CHEATS)', method: QR_METHOD, txCode, status: 'PENDING', uid, email: email || d.email || '', reqId, ip, ...(source !== 'website' ? { source } : {}) };
+      const entry = { date, amount, paymentAccount: 'QR (NK STORE)', method: QR_METHOD, txCode, status: 'PENDING', uid, email: email || d.email || '', reqId, ip, ...(source !== 'website' ? { source } : {}) };
       tx.set(userRef, { topupRequests: [...list, entry] }, { merge: true });
       tx.set(txRef, { uid, reqId, at: date });
       tx.set(idxRef, { uid, txCode, amount, status: 'PENDING', createdAt: date, messages: [], ...(source !== 'website' ? { source } : {}), ...extraIndex });

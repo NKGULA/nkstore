@@ -1,6 +1,6 @@
 // src by SRT X CHEATS. Copy right SRT X CHEATS
 // PUBLIC bot - anyone can check a reseller/user by sending a phone number, e-mail or UID.
-//   User 1 sends details of User 2  ->  bot shows "SRT X CHEATS USER DETAILS"  ->  [Report] [Ok]
+//   User 1 sends details of User 2  ->  bot shows "NK STORE USER DETAILS"  ->  [Report] [Ok]
 //   [Report] asks for the report text and delivers it to the admins (and stores it in Firestore).
 // Env: TELEGRAM_PUBLIC_BOT_TOKEN (required), PUBLIC_BACKEND_URL (https, for the webhook),
 //      TELEGRAM_PUBLIC_WEBHOOK_SECRET (optional), PUBLIC_BOT_MASK_CONTACT=1 (hide middle of number/e-mail).
@@ -81,7 +81,7 @@ export function buildDetails(uid, d) {
     ['Spend money', nrp(d.totalSpent)],
     ['Account status', ban ? `BANNED (${ban.label})` : (d.requestStatus || 'Active')],
   ];
-  const lines = [LONG, '<b>SRT X CHEATS USER DETAILS</b>', SHORT];
+  const lines = [LONG, '<b>NK STORE USER DETAILS</b>', SHORT];
   for (const [k, v] of rows) lines.push(`${k} - <b>${esc(v)}</b>`, SHORT);
   lines[lines.length - 1] = LONG;
   return lines.join('\n');
@@ -108,7 +108,7 @@ function allow(userId, bucket, max, windowMs) {
 }
 
 const INTRO =
-  '👋 <b>SRT X CHEATS — user check</b>\n' +
+  '👋 <b>NK STORE — user check</b>\n' +
   'Send a reseller\'s <b>phone number</b>, <b>e-mail</b> or <b>UID</b> and I will show their account details.\n' +
   'You can report a reseller from the result with the Report button.';
 
