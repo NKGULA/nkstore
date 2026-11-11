@@ -11,6 +11,10 @@ export const resellerPrice = (p, role = 'reseller') => Number(tierPrice(p, role 
 
 const toStatus = (maintenance, outOfStock) => (maintenance ? 'maintenance' : outOfStock ? 'out_of_stock' : 'available');
 
+// Manual-stock durations report how many keys are left (null for supplier products = no fixed number).
+const stockOf = (d) => (d.stockMode === true ? Math.max(0, Math.floor(Number(d.stock) || 0)) : null);
+const soldOut = (d) => d.stockMode === true && stockOf(d) === 0;
+
 export async function listApiProducts(role = 'reseller') {
   // src by SRT X CHEATS. Copy right SRT X CHEATS
   const [custom, overrides] = await Promise.all([
@@ -32,7 +36,8 @@ export async function listApiProducts(role = 'reseller') {
         price: resellerPrice(d, role),
         // src by SRT X CHEATS. Copy right SRT X CHEATS
         requiresAndroidId: !!d.requiresAndroidId,
-        status: toStatus(!!o.maintenance, !!o.outOfStock),
+        status: toStatus(!!o.maintenance, !!o.outOfStock || soldOut(d)),
+        stock: stockOf(d),
       };
     })
     .sort((a, b) => a.row.localeCompare(b.row) || a.price - b.price);
